@@ -34,14 +34,14 @@ class Plugin
     public function afterGetFilters(Navigation $block, $result)
     {
         $block->setData('form_filters', $this->config->getUseFormFilters());
-        return array_filter($result, [$this, 'shouldShowFacet']);
+        return array_filter($result, [$this, 'shouldShowFilter']);
     }
 
     /**
      * @param Filter $filter
      * @return bool
      */
-    protected function shouldShowFacet(Filter $filter)
+    protected function shouldShowFilter(Filter $filter)
     {
         if (!$this->config->getHideSingleOptions()) {
             return true;
