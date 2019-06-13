@@ -44,16 +44,6 @@ class Url
     protected $categoryUrlStrategy;
 
     /**
-     * @var CategoryRepositoryInterface
-     */
-    private $categoryRepository;
-
-    /**
-     * @var ExportHelper
-     */
-    private $exportHelper;
-
-    /**
      * @var HttpRequest
      */
     protected $request;
@@ -73,15 +63,11 @@ class Url
     public function __construct(
         UrlStrategyFactory $urlStrategyFactory,
         HttpRequest $request,
-        CategoryRepositoryInterface $categoryRepository,
-        ExportHelper $exportHelper,
         Config $config
     ) {
         $this->urlStrategy = $urlStrategyFactory->create();
         $this->filterApplier = $urlStrategyFactory->create(FilterApplierInterface::class);
         $this->categoryUrlStrategy = $urlStrategyFactory->create(CategoryUrlInterface::class);
-        $this->categoryRepository = $categoryRepository;
-        $this->exportHelper = $exportHelper;
         $this->request = $request;
         $this->config = $config;
     }
@@ -146,18 +132,5 @@ class Url
     public function getSliderUrl(Item $item)
     {
         return $this->urlStrategy->getSliderUrl($this->request, $item);
-    }
-
-    /**
-     * @param Item $item
-     * @return CategoryInterface
-     * @throws \Magento\Framework\Exception\NoSuchEntityException
-     */
-    protected function getCategoryFromItem(Item $item): CategoryInterface
-    {
-        $tweakwiseCategoryId = $item->getAttribute()->getAttributeId();
-        $categoryId = $this->exportHelper->getStoreId($tweakwiseCategoryId);
-
-        return $this->categoryRepository->get($categoryId);
     }
 }

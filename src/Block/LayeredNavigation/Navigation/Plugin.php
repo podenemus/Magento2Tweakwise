@@ -6,6 +6,7 @@
 
 namespace Emico\Tweakwise\Block\LayeredNavigation\Navigation;
 
+use Emico\Tweakwise\Model\Catalog\Layer\Filter;
 use Emico\Tweakwise\Model\Config;
 use Magento\LayeredNavigation\Block\Navigation;
 
@@ -26,12 +27,28 @@ class Plugin
 
     /**
      * @param Navigation $block
-     * @param $result
+     * @param Filter[] $result
+     *
      * @return mixed
      */
     public function afterGetFilters(Navigation $block, $result)
     {
         $block->setData('form_filters', $this->config->getUseFormFilters());
-        return $result;
+        return array_filter($result, [$this, 'shouldShowFacet']);
     }
+
+    /**
+     * @param Filter $filter
+     * @return bool
+     */
+    protected function shouldShowFacet(Filter $filter)
+    {
+        if (!$this->config->getHideSingleOptions()) {
+            return true;
+        }
+
+        return count($filter->getItems()) !== 1;
+    }
+
+
 }

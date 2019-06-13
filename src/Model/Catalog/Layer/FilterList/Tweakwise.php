@@ -83,10 +83,6 @@ class Tweakwise
             $attribute = isset($filterAttributes[$key]) ? $filterAttributes[$key] : null;
 
             $filter = $this->filterFactory->create(['facet' => $facet, 'layer' => $layer, 'attribute' => $attribute]);
-            if ($this->shouldHideFacet($filter)) {
-                continue;
-            }
-
             $this->filters[] = $filter;
 
             foreach ($filter->getActiveItems() as $activeFilterItem) {
@@ -95,18 +91,5 @@ class Tweakwise
         }
 
         return $this;
-    }
-
-    /**
-     * @param Filter $filter
-     * @return bool
-     */
-    protected function shouldHideFacet(Filter $filter)
-    {
-        if (!$this->config->getHideSingleOptions()) {
-            return false;
-        }
-
-        return count($filter->getItems()) === 1;
     }
 }
