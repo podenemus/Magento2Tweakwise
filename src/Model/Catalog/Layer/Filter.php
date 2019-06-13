@@ -15,18 +15,19 @@ use Emico\Tweakwise\Model\Catalog\Layer\Filter\ItemFactory;
 use Emico\Tweakwise\Model\Client\Type\FacetType\SettingsType;
 use Magento\Catalog\Model\Layer;
 use Magento\Catalog\Model\Layer\Filter\AbstractFilter;
-use Magento\Catalog\Model\Layer\Filter\FilterInterface;
 use Magento\Eav\Model\Entity\Attribute;
 use Magento\Eav\Model\Entity\Attribute\Option;
 use Magento\Framework\App\RequestInterface;
 use Magento\Store\Model\StoreManager;
 
 /**
- * Class Filter Extends Magento\Catalog\Model\Layer\Filter\AbstractFilter only for the type hint in Magento\Swatches\Block\LayeredNavigation\RenderLayered
+ * Class Filter Extends \Magento\Catalog\Model\Layer\Filter\AbstractFilter
+ * only for the type hint in \Magento\Swatches\Block\LayeredNavigation\RenderLayered
  *
+ * @see \Magento\Swatches\Block\LayeredNavigation\RenderLayered
  * @package Emico\Tweakwise\Model\Catalog\Layer
  */
-class Filter extends AbstractFilter implements FilterInterface
+class Filter extends AbstractFilter
 {
     /**
      * @var string

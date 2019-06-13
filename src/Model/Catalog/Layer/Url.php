@@ -16,10 +16,7 @@ use Emico\Tweakwise\Model\Catalog\Layer\Url\FilterApplierInterface;
 use Emico\Tweakwise\Model\Catalog\Layer\Url\UrlInterface;
 use Emico\Tweakwise\Model\Client\Request\ProductNavigationRequest;
 use Emico\Tweakwise\Model\Client\Type\FacetType\SettingsType;
-use Magento\Catalog\Api\Data\CategoryInterface;
-use Zend\Http\Request as HttpRequest;
-use Magento\Catalog\Api\CategoryRepositoryInterface;
-use Emico\TweakwiseExport\Model\Helper as ExportHelper;
+use Magento\Framework\App\Request\Http as MagentoHttpRequest;
 
 /**
  * Class Url will later implement logic to use implementation selected in configuration.
@@ -44,7 +41,7 @@ class Url
     protected $categoryUrlStrategy;
 
     /**
-     * @var HttpRequest
+     * @var MagentoHttpRequest
      */
     protected $request;
 
@@ -57,12 +54,12 @@ class Url
      * Builder constructor.
      *
      * @param UrlStrategyFactory $urlStrategyFactory
-     * @param HttpRequest $request
+     * @param MagentoHttpRequest $request
      * @param Config $config
      */
     public function __construct(
         UrlStrategyFactory $urlStrategyFactory,
-        HttpRequest $request,
+        MagentoHttpRequest $request,
         Config $config
     ) {
         $this->urlStrategy = $urlStrategyFactory->create();
@@ -102,7 +99,8 @@ class Url
             ->getFacetSettings();
 
         if ($settings->getSource() === SettingsType::SOURCE_CATEGORY) {
-            return $this->categoryUrlStrategy->getCategoryFilterRemoveUrl($this->request, $item);
+            return $this->categoryUrlStrategy
+                ->getCategoryFilterRemoveUrl($this->request, $item);
         }
 
         return $this->urlStrategy->getAttributeRemoveUrl($this->request, $item);
