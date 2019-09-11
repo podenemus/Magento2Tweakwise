@@ -324,4 +324,12 @@ class Config
             self::RECOMMENDATION_TYPE_FEATURED
         ));
     }
+
+    /**
+     * @return string|null
+     */
+    public function getUserAgentString()
+    {
+        return $this->getStoreConfig(null,'tweakwise/general/version') ?: null;
+    }
 }
