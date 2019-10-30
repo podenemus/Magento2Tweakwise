@@ -83,9 +83,14 @@ class Tweakwise
         $this->filters = [];
         foreach ($facets as $facet) {
             $key = $facet->getFacetSettings()->getUrlKey();
-            $attribute = isset($filterAttributes[$key]) ? $filterAttributes[$key] : null;
-
-            $filter = $this->filterFactory->create(['facet' => $facet, 'layer' => $layer, 'attribute' => $attribute]);
+            $attribute = $filterAttributes[$key] ?? null;
+            $filter = $this->filterFactory->create(
+                [
+                    'facet' => $facet,
+                    'layer' => $layer,
+                    'attribute' => $attribute
+                ]
+            );
             if ($this->shouldHideFacet($filter)) {
                 continue;
             }
