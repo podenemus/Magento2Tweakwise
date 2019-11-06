@@ -39,25 +39,28 @@ class RecommendationsResponse extends Response
      */
     public function setRecommendation(array $recommendation)
     {
-        if (is_array($recommendation) && !isset($recommendation['items'])) {
+        if (!empty($recommendation) && !isset($recommendation['items'])) {
             $recommendations = $recommendation;
             foreach ($recommendations as $recommendationEntry) {
                 $this->setData($recommendationEntry);
             }
-        } else {
-            $this->setData($recommendation);
+
+            return;
         }
+
+        $this->setData($recommendation);
     }
 
     /**
      * @return ItemType[]
      */
-    public function getItems()
+    public function getItems(): array
     {
         $data = $this->getDataValue('items');
         if (!$data) {
             return [];
         }
+
         return $data;
     }
 
@@ -85,12 +88,13 @@ class RecommendationsResponse extends Response
     /**
      * @return int[]
      */
-    public function getProductIds()
+    public function getProductIds(): array
     {
         $ids = [];
         foreach ($this->getItems() as $item) {
             $ids[] = $this->helper->getStoreId($item->getId());
         }
+
         return $ids;
     }
 }
