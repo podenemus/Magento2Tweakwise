@@ -8,6 +8,7 @@
 
 namespace Emico\Tweakwise\Model\Autocomplete\DataProvider;
 
+use Magento\Catalog\Block\Product\Image;
 use Magento\Catalog\Block\Product\ImageBuilder;
 use Magento\Catalog\Block\Product\ImageFactory;
 use Magento\Catalog\Model\Product;
@@ -63,7 +64,7 @@ class ProductItem implements ItemInterface
     /**
      * @return string
      */
-    public function getTitle()
+    public function getTitle(): string
     {
         return $this->product->getName();
     }
@@ -71,11 +72,11 @@ class ProductItem implements ItemInterface
     /**
      * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         $product = $this->product;
         $price = $product->getPriceInfo();
-        $image = $this->getImage($product);
+        $image = $this->getImage();
 
         return [
             'title' => $this->getTitle(),
@@ -89,12 +90,19 @@ class ProductItem implements ItemInterface
     }
 
     /**
+     * @return Product
+     */
+    public function getProduct()
+    {
+        return $this->product;
+    }
+
+    /**
      * ImageFactory class does not exist in 2.2 so we need a proxy
      *
-     * @param Product $product
-     * @return \Magento\Catalog\Block\Product\Image
+     * @return Image
      */
-    protected function getImage(Product $product)
+    protected function getImage(): Image
     {
         $version = $this->productMetadata->getVersion();
         if (version_compare($version, '2.3.0', '<')) {
@@ -104,7 +112,7 @@ class ProductItem implements ItemInterface
         }
 
         return $imageResolver->create(
-            $product,
+            $this->product,
             'product_thumbnail_image',
             []
         );
