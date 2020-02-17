@@ -229,6 +229,7 @@ class QueryParameterStrategy implements UrlInterface, FilterApplierInterface, Ca
 
             $index = array_search($value, $values, false);
             if ($index !== false) {
+                /** @noinspection OffsetOperationsInspection */
                 unset($values[$index]);
             }
 
@@ -373,5 +374,28 @@ class QueryParameterStrategy implements UrlInterface, FilterApplierInterface, Ca
     protected function getSearch(MagentoHttpRequest $request)
     {
         return $request->getQuery(self::PARAM_SEARCH);
+    }
+
+    /**
+     * @param Item $item
+     * @return CategoryInterface
+     * @throws \Magento\Framework\Exception\NoSuchEntityException
+     */
+    protected function getCategoryFromItem(Item $item): CategoryInterface
+    {
+        $tweakwiseCategoryId = $item->getAttribute()->getAttributeId();
+        $categoryId = $this->exportHelper->getStoreId($tweakwiseCategoryId);
+
+        return $this->categoryRepository->get($categoryId);
+    }
+
+    /**
+     * Determine if this UrlInterface is allowed in the current context
+     *
+     * @return boolean
+     */
+    public function isAllowed(): bool
+    {
+        return true;
     }
 }

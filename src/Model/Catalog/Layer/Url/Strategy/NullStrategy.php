@@ -114,4 +114,14 @@ class NullStrategy implements
 
         return '';
     }
+
+    /**
+     * Determine if this UrlInterface is allowed in the current context
+     *
+     * @return boolean
+     */
+    public function isAllowed(): bool
+    {
+        return true;
+    }
 }

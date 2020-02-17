@@ -8,8 +8,11 @@
 
 namespace Emico\Tweakwise\Model\Catalog\Layer\Url;
 
+use Emico\Tweakwise\Model\Catalog\Layer\Filter;
 use Emico\Tweakwise\Model\Catalog\Layer\Filter\Item;
-use Magento\Framework\App\Request\Http as MagentoHttpRequest;
+use Emico\Tweakwise\Model\Client\Request\ProductNavigationRequest;
+use Magento\Framework\Api\SortOrder;
+use Zend\Http\Request as HttpRequest;
 
 /**
  * Interface UrlInterface implementation should handle both category url's and
@@ -21,50 +24,41 @@ interface UrlInterface
     /**
      * Get url when selecting item
      *
-     * @param MagentoHttpRequest $request
+     * @param HttpRequest $request
      * @param Item $item
-     *
      * @return string
      */
-    public function getAttributeSelectUrl(
-        MagentoHttpRequest $request,
-        Item $item
-    ): string;
+    public function getAttributeSelectUrl(HttpRequest $request, Item $item): string;
 
     /**
      * Get url when removing item from selecting
      *
-     * @param MagentoHttpRequest $request
+     * @param HttpRequest $request
      * @param Item $item
-     *
      * @return string
      */
-    public function getAttributeRemoveUrl(
-        MagentoHttpRequest $request,
-        Item $item
-    ): string;
+    public function getAttributeRemoveUrl(HttpRequest $request, Item $item): string;
 
     /**
-     * @param MagentoHttpRequest $request
+     * @param HttpRequest $request
      * @param Item $item
-     *
      * @return string
      */
-    public function getSliderUrl(
-        MagentoHttpRequest $request,
-        Item $item
-    ): string;
+    public function getSliderUrl(HttpRequest $request, Item $item): string;
 
     /**
      * Fetch clear all items from url
      *
-     * @param MagentoHttpRequest $request
+     * @param HttpRequest $request
      * @param Item[] $activeFilterItems
-     *
      * @return string
      */
-    public function getClearUrl(
-        MagentoHttpRequest $request,
-        array $activeFilterItems
-    ): string;
+    public function getClearUrl(HttpRequest $request, array $activeFilterItems): string;
+
+    /**
+     * Determine if this UrlInterface is allowed in the current context
+     *
+     * @return boolean
+     */
+    public function isAllowed(): bool;
 }

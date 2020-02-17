@@ -8,9 +8,10 @@
 
 namespace Emico\Tweakwise\Model\Catalog\Layer\Url\Strategy;
 
-
+use Emico\Tweakwise\Exception\RuntimeException;
 use Emico\Tweakwise\Exception\UnexpectedValueException;
 use Emico\Tweakwise\Model\Catalog\Layer\Filter\Item;
+use Emico\Tweakwise\Model\Catalog\Layer\NavigationContext\CurrentContext;
 use Emico\Tweakwise\Model\Catalog\Layer\UrlFactory;
 use Emico\Tweakwise\Model\Catalog\Layer\Url\CategoryUrlInterface;
 use Emico\Tweakwise\Model\Catalog\Layer\Url\FilterApplierInterface;
@@ -18,8 +19,9 @@ use Emico\Tweakwise\Model\Catalog\Layer\Url\RouteMatchingInterface;
 use Emico\Tweakwise\Model\Catalog\Layer\Url\UrlInterface;
 use Emico\Tweakwise\Model\Catalog\Layer\Url\UrlModel;
 use Emico\Tweakwise\Model\Client\Request\ProductNavigationRequest;
+use Emico\Tweakwise\Model\Client\Request\ProductSearchRequest;
 use Emico\Tweakwise\Model\Client\Type\FacetType\SettingsType;
-use Magento\Catalog\Api\Data\CategoryInterface;
+use Emico\Tweakwise\Model\Config;
 use Magento\Catalog\Model\Layer;
 use Magento\Catalog\Model\Layer\Resolver;
 use Magento\Framework\App\ActionInterface;
@@ -80,7 +82,7 @@ class PathSlugStrategy implements
      * @var Item[]
      */
     private $activeFilters;
-    
+
     /**
      * @var QueryParameterStrategy
      */
@@ -97,6 +99,16 @@ class PathSlugStrategy implements
     private $storeManager;
 
     /**
+     * @var Config
+     */
+    private $config;
+
+    /**
+     * @var CurrentContext
+     */
+    private $currentContext;
+
+    /**
      * Magento constructor.
      *
      * @param UrlModel $magentoUrl
@@ -106,6 +118,8 @@ class PathSlugStrategy implements
      * @param FilterSlugManager $filterSlugManager
      * @param QueryParameterStrategy $queryParameterStrategy
      * @param StoreManagerInterface $storeManager
+     * @param Config $config
+     * @param CurrentContext $currentContext
      * @param CategoryRepositoryInterface $categoryRepository
      * @param ExportHelper $exportHelper
      */
@@ -118,7 +132,9 @@ class PathSlugStrategy implements
         QueryParameterStrategy $queryParameterStrategy,
         StoreManagerInterface $storeManager,
         CategoryRepositoryInterface $categoryRepository,
-        ExportHelper $exportHelper
+        ExportHelper $exportHelper,
+        Config $config,
+        CurrentContext $currentContext
     ) {
         $this->magentoUrl = $magentoUrl;
         $this->layerResolver = $layerResolver;
@@ -129,6 +145,8 @@ class PathSlugStrategy implements
         $this->storeManager = $storeManager;
         $this->categoryRepository = $categoryRepository;
         $this->exportHelper = $exportHelper;
+        $this->config = $config;
+        $this->currentContext = $currentContext;
     }
 
     /**
@@ -444,7 +462,6 @@ class PathSlugStrategy implements
     /**
      * @param MagentoHttpRequest $request
      * @param Item $item
-     * @param CategoryInterface $category
      * @return mixed
      */
     public function getCategoryFilterSelectUrl(
@@ -487,5 +504,22 @@ class PathSlugStrategy implements
             $this->getActiveFilters(),
             $categoryUrl
         );
+    }
+
+    /**
+     * Determine if this UrlInterface is allowed in the current context
+     *
+     * @return boolean
+     */
+    public function isAllowed(): bool
+    {
+        try {
+            $context = $this->currentContext->getContext();
+        } catch (RuntimeException $e) {
+            return true;
+        }
+
+        return !$context->getRequest() instanceof ProductSearchRequest
+            && !$this->config->getUseFormFilters();
     }
 }

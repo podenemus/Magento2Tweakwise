@@ -334,6 +334,15 @@ class Config
     {
         return $this->getStoreConfig('tweakwise/seo/max_allowed_facets', $store);
     }
+
+    /**
+     * @param Store|null $store
+     * @return mixed|string|null
+     */
+    public function getSearchLanguage(Store $store = null)
+    {
+        return $this->getStoreConfig('tweakwise/search/language', $store);
+    }
     
     /**
      * @param Store|null $store
@@ -397,5 +406,13 @@ class Config
     public function getJsUseFormFilters()
     {
         return $this->jsonSerializer->serialize($this->getUseFormFilters());
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getUserAgentString()
+    {
+        return $this->getStoreConfig('tweakwise/general/version') ?: null;
     }
 }
