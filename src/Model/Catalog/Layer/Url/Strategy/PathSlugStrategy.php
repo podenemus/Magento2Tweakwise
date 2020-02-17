@@ -28,6 +28,7 @@ use Magento\Framework\App\ActionInterface;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\UrlRewrite\Model\UrlFinderInterface;
 use Magento\UrlRewrite\Service\V1\Data\UrlRewrite;
+use Zend\Http\Request as HttpRequest;
 use Magento\Framework\App\Request\Http as MagentoHttpRequest;
 use Magento\Framework\UrlInterface as MagentoUrlInterface;
 use Magento\Store\Model\StoreManagerInterface;
@@ -152,11 +153,11 @@ class PathSlugStrategy implements
     /**
      * Get url when selecting item
      *
-     * @param MagentoHttpRequest $request
+     * @param HttpRequest $request
      * @param Item $item
      * @return string
      */
-    public function getAttributeSelectUrl(MagentoHttpRequest $request, Item $item): string
+    public function getAttributeSelectUrl(HttpRequest $request, Item $item): string
     {
         $filters = $this->getActiveFilters();
         $filters[] = $item;
@@ -167,11 +168,11 @@ class PathSlugStrategy implements
     /**
      * Get url when removing item from selecting
      *
-     * @param MagentoHttpRequest $request
+     * @param HttpRequest $request
      * @param Item $item
      * @return string
      */
-    public function getAttributeRemoveUrl(MagentoHttpRequest $request, Item $item): string
+    public function getAttributeRemoveUrl(HttpRequest $request, Item $item): string
     {
         $filters = $this->getActiveFilters();
         foreach ($filters as $key => $activeItem) {
@@ -184,11 +185,11 @@ class PathSlugStrategy implements
     }
 
     /**
-     * @param MagentoHttpRequest $request
+     * @param HttpRequest $request
      * @param Item $item
      * @return string
      */
-    public function getSliderUrl(MagentoHttpRequest $request, Item $item): string
+    public function getSliderUrl(HttpRequest $request, Item $item): string
     {
         $filters = $this->getActiveFilters();
         foreach ($filters as $key => $activeItem) {
@@ -206,11 +207,11 @@ class PathSlugStrategy implements
     /**
      * Fetch clear all items from url
      *
-     * @param MagentoHttpRequest $request
+     * @param HttpRequest $request
      * @param Item[] $activeFilterItems
      * @return string
      */
-    public function getClearUrl(MagentoHttpRequest $request, array $activeFilterItems): string
+    public function getClearUrl(HttpRequest $request, array $activeFilterItems): string
     {
         return $this->addFiltersToUrl($request);
     }
@@ -218,11 +219,11 @@ class PathSlugStrategy implements
     /**
      * Apply all attribute filters, category filters, sort order, page limit request parameters to navigation request
      *
-     * @param MagentoHttpRequest $request
+     * @param HttpRequest $request
      * @param ProductNavigationRequest $navigationRequest
      * @return $this
      */
-    public function apply(MagentoHttpRequest $request, ProductNavigationRequest $navigationRequest): FilterApplierInterface
+    public function apply(HttpRequest $request, ProductNavigationRequest $navigationRequest): FilterApplierInterface
     {
         // Order / pagination etc. is still done with query parameters. Also apply this using the queryParameter strategy
         $this->queryParameterStrategy->apply($request, $navigationRequest);
@@ -288,12 +289,12 @@ class PathSlugStrategy implements
     }
 
     /**
-     * @param MagentoHttpRequest $request
+     * @param HttpRequest $request
      * @param array $filters
      * @param string $sourceUrl
      * @return string
      */
-    public function addFiltersToUrl(MagentoHttpRequest $request, array $filters = [], string $sourceUrl = null): string
+    public function addFiltersToUrl(HttpRequest $request, array $filters = [], string $sourceUrl = null): string
     {
         if (!$sourceUrl) {
             $sourceUrl = $this->getCurrentUrl();
@@ -460,12 +461,12 @@ class PathSlugStrategy implements
     }
 
     /**
-     * @param MagentoHttpRequest $request
+     * @param HttpRequest $request
      * @param Item $item
      * @return mixed
      */
     public function getCategoryFilterSelectUrl(
-        MagentoHttpRequest $request,
+        HttpRequest $request,
         Item $item
     ): string {
 
@@ -478,14 +479,14 @@ class PathSlugStrategy implements
     }
 
     /**
-     * @param MagentoHttpRequest $request
+     * @param HttpRequest $request
      * @param Item $item
      * @param CategoryInterface $category
      *
      * @return mixed
      */
     public function getCategoryFilterRemoveUrl(
-        MagentoHttpRequest $request,
+        HttpRequest $request,
         Item $item
     ): string {
 

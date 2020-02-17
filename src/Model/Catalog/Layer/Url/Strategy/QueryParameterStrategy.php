@@ -15,10 +15,11 @@ use Emico\Tweakwise\Model\Catalog\Layer\Url\UrlInterface;
 use Emico\Tweakwise\Model\Client\Request\ProductNavigationRequest;
 use Emico\Tweakwise\Model\Catalog\Layer\Url\UrlModel;
 use Emico\Tweakwise\Model\Client\Request\ProductSearchRequest;
-use Magento\Framework\App\Request\Http as MagentoHttpRequest;
+use Zend\Http\Request as HttpRequest;
 use Magento\Catalog\Api\CategoryRepositoryInterface;
 use Emico\TweakwiseExport\Model\Helper as ExportHelper;
 use Magento\Catalog\Model\Layer\Resolver;
+use Magento\Catalog\Api\Data\CategoryInterface;
 
 
 class QueryParameterStrategy implements UrlInterface, FilterApplierInterface, CategoryUrlInterface
@@ -79,8 +80,8 @@ class QueryParameterStrategy implements UrlInterface, FilterApplierInterface, Ca
         UrlModel $url,
         CategoryRepositoryInterface $categoryRepository,
         ExportHelper $exportHelper,
-        Resolver $layerResolver)
-    {
+        Resolver $layerResolver
+    ) {
         $this->url = $url;
         $this->categoryRepository = $categoryRepository;
         $this->exportHelper = $exportHelper;
@@ -90,12 +91,12 @@ class QueryParameterStrategy implements UrlInterface, FilterApplierInterface, Ca
     /**
      * Fetch clear all items from url
      *
-     * @param MagentoHttpRequest $request
+     * @param HttpRequest $request
      * @param Item[] $activeFilterItems
      * @return string
      */
     public function getClearUrl(
-        MagentoHttpRequest $request,
+        HttpRequest $request,
         array $activeFilterItems
     ): string {
         $query = [];
@@ -125,11 +126,11 @@ class QueryParameterStrategy implements UrlInterface, FilterApplierInterface, Ca
     /**
      * Fetch current selected values
      *
-     * @param MagentoHttpRequest $request
+     * @param HttpRequest $request
      * @param Item $item
      * @return string[]|string|null
      */
-    protected function getRequestValues(MagentoHttpRequest $request, Item $item)
+    protected function getRequestValues(HttpRequest $request, Item $item)
     {
         $filter = $item->getFilter();
         $settings = $filter
@@ -161,7 +162,7 @@ class QueryParameterStrategy implements UrlInterface, FilterApplierInterface, Ca
      * {@inheritdoc}
      */
     public function getCategoryFilterSelectUrl(
-        MagentoHttpRequest $request,
+        HttpRequest $request,
         Item $item
     ): string {
         return $this->getCategoryFromItem($item)->getUrl();
@@ -171,7 +172,7 @@ class QueryParameterStrategy implements UrlInterface, FilterApplierInterface, Ca
      * {@inheritdoc}
      */
     public function getCategoryFilterRemoveUrl(
-        MagentoHttpRequest $request,
+        HttpRequest $request,
         Item $item
     ): string {
         /** @var \Magento\Catalog\Model\Category $category */
@@ -187,7 +188,7 @@ class QueryParameterStrategy implements UrlInterface, FilterApplierInterface, Ca
     /**
      * {@inheritdoc}
      */
-    public function getAttributeSelectUrl(MagentoHttpRequest $request, Item $item): string
+    public function getAttributeSelectUrl(HttpRequest $request, Item $item): string
     {
         $settings = $item
             ->getFilter()
@@ -215,7 +216,7 @@ class QueryParameterStrategy implements UrlInterface, FilterApplierInterface, Ca
     /**
      * {@inheritdoc}
      */
-    public function getAttributeRemoveUrl(MagentoHttpRequest $request, Item $item): string
+    public function getAttributeRemoveUrl(HttpRequest $request, Item $item): string
     {
         $filter = $item->getFilter();
         $settings = $filter->getFacet()->getFacetSettings();
@@ -267,7 +268,7 @@ class QueryParameterStrategy implements UrlInterface, FilterApplierInterface, Ca
     /**
      * {@inheritdoc}
      */
-    protected function getAttributeFilters(MagentoHttpRequest $request)
+    protected function getAttributeFilters(HttpRequest $request)
     {
         $result = [];
         foreach ($request->getQuery() as $attribute => $value) {
@@ -283,7 +284,7 @@ class QueryParameterStrategy implements UrlInterface, FilterApplierInterface, Ca
     /**
      * {@inheritdoc}
      */
-    public function getSliderUrl(MagentoHttpRequest $request, Item $item): string
+    public function getSliderUrl(HttpRequest $request, Item $item): string
     {
         $query = [$item->getFilter()->getUrlKey() => '{{from}}-{{to}}'];
 
@@ -293,7 +294,7 @@ class QueryParameterStrategy implements UrlInterface, FilterApplierInterface, Ca
     /**
      * {@inheritdoc}
      */
-    public function apply(MagentoHttpRequest $request, ProductNavigationRequest $navigationRequest): FilterApplierInterface
+    public function apply(HttpRequest $request, ProductNavigationRequest $navigationRequest): FilterApplierInterface
     {
         $attributeFilters = $this->getAttributeFilters($request);
         foreach ($attributeFilters as $attribute => $values) {
@@ -341,37 +342,37 @@ class QueryParameterStrategy implements UrlInterface, FilterApplierInterface, Ca
     }
 
     /**
-     * @param MagentoHttpRequest $request
+     * @param HttpRequest $request
      * @return string|null
      */
-    protected function getSortOrder(MagentoHttpRequest $request)
+    protected function getSortOrder(HttpRequest $request)
     {
         return $request->getQuery(self::PARAM_ORDER);
     }
 
     /**
-     * @param MagentoHttpRequest $request
+     * @param HttpRequest $request
      * @return int|null
      */
-    protected function getPage(MagentoHttpRequest $request)
+    protected function getPage(HttpRequest $request)
     {
         return $request->getQuery(self::PARAM_PAGE);
     }
 
     /**
-     * @param MagentoHttpRequest $request
+     * @param HttpRequest $request
      * @return int|null
      */
-    protected function getLimit(MagentoHttpRequest $request)
+    protected function getLimit(HttpRequest $request)
     {
         return $request->getQuery(self::PARAM_LIMIT);
     }
 
     /**
-     * @param MagentoHttpRequest $request
+     * @param HttpRequest $request
      * @return string|null
      */
-    protected function getSearch(MagentoHttpRequest $request)
+    protected function getSearch(HttpRequest $request)
     {
         return $request->getQuery(self::PARAM_SEARCH);
     }

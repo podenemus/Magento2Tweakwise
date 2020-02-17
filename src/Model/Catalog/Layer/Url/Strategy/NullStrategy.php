@@ -15,6 +15,7 @@ use Emico\Tweakwise\Model\Catalog\Layer\Url\RouteMatchingInterface;
 use Emico\Tweakwise\Model\Catalog\Layer\Url\UrlInterface;
 use Emico\Tweakwise\Model\Client\Request\ProductNavigationRequest;
 use Magento\Framework\App\ActionInterface;
+use Zend\Http\Request as HttpRequest;
 use Magento\Framework\App\Request\Http as MagentoHttpRequest;
 
 /**
@@ -28,7 +29,7 @@ class NullStrategy implements
     FilterApplierInterface
 {
     /**
-     * @param MagentoHttpRequest $request
+     * @param HttpRequest $request
      * @return bool|ActionInterface
      */
     public function match(MagentoHttpRequest $request)
@@ -40,13 +41,13 @@ class NullStrategy implements
      * Apply all attribute filters to navigation request.
      * Category filters, sort order, page limit request parameters
      *
-     * @param MagentoHttpRequest $request
+     * @param HttpRequest $request
      * @param ProductNavigationRequest $navigationRequest
      *
      * @return $this
      */
     public function apply(
-        MagentoHttpRequest $request,
+        HttpRequest $request,
         ProductNavigationRequest $navigationRequest
     ): FilterApplierInterface {
 
@@ -56,13 +57,13 @@ class NullStrategy implements
     /**
      * Get url when selecting item
      *
-     * @param MagentoHttpRequest $request
+     * @param HttpRequest $request
      * @param Item $item
      *
      * @return string
      */
     public function getAttributeSelectUrl(
-        MagentoHttpRequest $request,
+        HttpRequest $request,
         Item $item
     ): string {
 
@@ -72,13 +73,13 @@ class NullStrategy implements
     /**
      * Get url when removing item from selecting
      *
-     * @param MagentoHttpRequest $request
+     * @param HttpRequest $request
      * @param Item $item
      *
      * @return string
      */
     public function getAttributeRemoveUrl(
-        MagentoHttpRequest $request,
+        HttpRequest $request,
         Item $item
     ): string {
 
@@ -86,13 +87,13 @@ class NullStrategy implements
     }
 
     /**
-     * @param MagentoHttpRequest $request
+     * @param HttpRequest $request
      * @param Item $item
      *
      * @return string
      */
     public function getSliderUrl(
-        MagentoHttpRequest $request,
+        HttpRequest $request,
         Item $item
     ): string {
 
@@ -102,13 +103,13 @@ class NullStrategy implements
     /**
      * Fetch clear all items from url
      *
-     * @param MagentoHttpRequest $request
+     * @param HttpRequest $request
      * @param Item[] $activeFilterItems
      *
      * @return string
      */
     public function getClearUrl(
-        MagentoHttpRequest $request,
+        HttpRequest $request,
         array $activeFilterItems
     ): string {
 
