@@ -9,6 +9,7 @@
 namespace Emico\Tweakwise\Block\LayeredNavigation\RenderLayered;
 
 use Emico\Tweakwise\Model\Config;
+use Emico\Tweakwise\Model\NavigationConfig\NavigationConfigInterface;
 use Emico\Tweakwise\Model\Seo\FilterHelper;
 use Magento\Tax\Helper\Data as TaxHelper;
 use Magento\Framework\Pricing\Helper\Data as PriceHelper;
@@ -37,6 +38,7 @@ class SliderRenderer extends DefaultRenderer
      * @param PriceHelper $priceHelper
      * @param TaxHelper $taxHelper
      * @param Config $config
+     * @param NavigationConfigInterface $navigationConfig
      * @param FilterHelper $filterHelper
      * @param Template\Context $context
      * @param Json $jsonSerializer
@@ -46,13 +48,13 @@ class SliderRenderer extends DefaultRenderer
         PriceHelper $priceHelper,
         TaxHelper $taxHelper,
         Config $config,
+        NavigationConfigInterface $navigationConfig,
         FilterHelper $filterHelper,
         Template\Context $context,
         Json $jsonSerializer,
         array $data = []
-    )
-    {
-        parent::__construct($context, $config, $filterHelper, $jsonSerializer, $data);
+    ) {
+        parent::__construct($context, $config, $navigationConfig, $filterHelper, $jsonSerializer, $data);
         $this->priceHelper = $priceHelper;
         $this->taxHelper = $taxHelper;
     }
@@ -157,5 +159,21 @@ class SliderRenderer extends DefaultRenderer
         }
 
         return $items[0]->getUrl();
+    }
+
+    /**
+     * @return bool|string
+     */
+    public function getJsUseFormFilters()
+    {
+        return $this->jsonSerializer->serialize($this->config->getUseFormFilters());
+    }
+
+    /**
+     * @return string
+     */
+    public function getJsSliderConfig(): string
+    {
+        return $this->navigationConfig->getJsSliderConfig($this);
     }
 }

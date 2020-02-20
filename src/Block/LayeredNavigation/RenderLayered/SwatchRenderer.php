@@ -9,6 +9,7 @@
 namespace Emico\Tweakwise\Block\LayeredNavigation\RenderLayered;
 
 use Emico\Tweakwise\Model\Catalog\Layer\Filter\Item;
+use Emico\Tweakwise\Model\NavigationConfig\NavigationConfigInterface;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Layer\Filter\AttributeFactory;
 use Magento\Eav\Model\Entity\Attribute;
@@ -19,6 +20,7 @@ use Magento\Swatches\Helper\Data;
 use Magento\Swatches\Helper\Media;
 use Emico\Tweakwise\Model\Config;
 use Emico\Tweakwise\Model\Seo\FilterHelper;
+use Magento\Framework\Serialize\Serializer\Json;
 use Magento\Catalog\Model\ResourceModel\Eav\AttributeFactory as EavAttributeFactory;
 
 class SwatchRenderer extends RenderLayered
@@ -48,6 +50,16 @@ class SwatchRenderer extends RenderLayered
     protected $eavAttributeFactory;
 
     /**
+     * @var Json
+     */
+    protected $jsonSerializer;
+
+    /**
+     * @var NavigationConfigInterface
+     */
+    protected $navigationConfig;
+
+    /**
      * SwatchRenderer constructor.
      * @param Context $context
      * @param Attribute $eavAttribute
@@ -55,7 +67,10 @@ class SwatchRenderer extends RenderLayered
      * @param Data $swatchHelper
      * @param Media $mediaHelper
      * @param Config $config
-     * @param EavAttributeFactory $attributeFactory
+     * @param NavigationConfigInterface $navigationConfig
+     * @param EavAttributeFactory $eavAttributeFactory
+     * @param FilterHelper $filterHelper
+     * @param Json $jsonSerializer
      * @param array $data
      */
     public function __construct(
@@ -66,14 +81,17 @@ class SwatchRenderer extends RenderLayered
         Media $mediaHelper,
         Config $config,
         EavAttributeFactory $eavAttributeFactory,
+        NavigationConfigInterface $navigationConfig,
         FilterHelper $filterHelper,
+        Json $jsonSerializer,
         array $data = []
-    )
-    {
+    ) {
         parent::__construct($context, $eavAttribute, $layerAttribute, $swatchHelper, $mediaHelper, $data);
         $this->config = $config;
         $this->eavAttributeFactory = $eavAttributeFactory;
         $this->filterHelper = $filterHelper;
+        $this->jsonSerializer = $jsonSerializer;
+        $this->navigationConfig = $navigationConfig;
     }
 
     /**
@@ -122,8 +140,31 @@ class SwatchRenderer extends RenderLayered
     /**
      * @return string
      */
-    public function getJsNavigationConfig()
+    public function getJsFilterNavigationConfig()
     {
-        return $this->config->getJsNavigationConfig();
+        return $this->navigationConfig->getJsFilterNavigationConfig();
+    }
+
+    /**
+     * @return string
+     */
+    public function getJsFormConfig()
+    {
+        return $this->navigationConfig->getJsFormConfig();
+    }
+
+    /**
+     * @return boolean
+     */
+    protected function hasAlternateSortOrder()
+    {
+        $filter = static function (Item $item) {
+            return $item->getAlternateSortOrder() !== null;
+        };
+
+        $items = $this->filter->getItems();
+        $itemsWithAlternateSortOrder = array_filter($items, $filter);
+
+        return count($items) === count($itemsWithAlternateSortOrder);
     }
 }

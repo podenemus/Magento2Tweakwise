@@ -107,19 +107,23 @@ class QueryParameterStrategy implements UrlInterface, FilterApplierInterface, Ca
             $query[$urlKey] = $filter->getCleanValue();
         }
 
-        return $this->getCurrentQueryUrl($query);
+        return $this->getCurrentQueryUrl($request, $query);
     }
 
     /**
      * @param array $query
      * @return string
      */
-    protected function getCurrentQueryUrl(array $query)
+    protected function getCurrentQueryUrl(HttpRequest $request, array $query)
     {
         $params['_current'] = true;
         $params['_use_rewrite'] = true;
         $params['_query'] = $query;
         $params['_escape'] = false;
+
+        if ($originalUrl = $request->getQuery('__tw_original_url')) {
+            return $this->url->getDirectUrl($originalUrl, $params);
+        }
         return $this->url->getUrl('*/*/*', $params);
     }
 
@@ -206,7 +210,7 @@ class QueryParameterStrategy implements UrlInterface, FilterApplierInterface, Ca
             $query = [$urlKey => $value];
         }
 
-        return $this->getCurrentQueryUrl($query);
+        return $this->getCurrentQueryUrl($request, $query);
     }
 
     /**
@@ -235,30 +239,7 @@ class QueryParameterStrategy implements UrlInterface, FilterApplierInterface, Ca
             $query = [$urlKey => $filter->getCleanValue()];
         }
 
-        return $this->getCurrentQueryUrl($query);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function getCategoryFilters()
-    {
-        $currentCategory = $this->layerResolver->get()->getCurrentCategory();
-        $currentCategoryId = (int)$currentCategory->getId();
-        $parentCategoryId = (int)$currentCategory->getParentCategory()->getId();
-        if (!$currentCategoryId || $currentCategoryId === 1 || !$parentCategoryId) {
-            return [];
-        }
-
-        $rootCategoryId = (int)$currentCategory->getStore()->getRootCategoryId();
-        if (\in_array($parentCategoryId,  [1, $rootCategoryId], true)) {
-            return [];
-        }
-
-        return [
-            $parentCategoryId,
-            $currentCategoryId
-        ];
+        return $this->getCurrentQueryUrl($request, $query);
     }
 
     /**
@@ -284,7 +265,7 @@ class QueryParameterStrategy implements UrlInterface, FilterApplierInterface, Ca
     {
         $query = [$item->getFilter()->getUrlKey() => '{{from}}-{{to}}'];
 
-        return $this->getCurrentQueryUrl($query);
+        return $this->getCurrentQueryUrl($request, $query);
     }
 
     /**
@@ -319,16 +300,6 @@ class QueryParameterStrategy implements UrlInterface, FilterApplierInterface, Ca
         }
 
         $isSearchRequest = $navigationRequest instanceof ProductSearchRequest;
-        // Do not check for category paths in case of search request.
-        // This will throw an exception on layer resolver.
-        if (!$isSearchRequest) {
-            $categories = $this->getCategoryFilters();
-
-            if ($categories) {
-                $navigationRequest->addCategoryPathFilter($categories);
-            }
-        }
-
         $search = $this->getSearch($request);
         if ($search && $isSearchRequest) {
             /** @var ProductSearchRequest $navigationRequest */

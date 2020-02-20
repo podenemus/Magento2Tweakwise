@@ -12,6 +12,7 @@ use Emico\Tweakwise\Model\Catalog\Layer\Filter;
 use Emico\Tweakwise\Model\Catalog\Layer\Filter\Item;
 use Emico\Tweakwise\Model\Client\Type\FacetType\SettingsType;
 use Emico\Tweakwise\Model\Config;
+use Emico\Tweakwise\Model\NavigationConfig\NavigationConfigInterface;
 use Emico\Tweakwise\Model\Seo\FilterHelper;
 use Magento\Framework\View\Element\Template;
 use Magento\Framework\Serialize\Serializer\Json;
@@ -41,20 +42,33 @@ class DefaultRenderer extends Template
     protected $config;
 
     /**
+     * @var NavigationConfigInterface
+     */
+    protected $navigationConfig;
+
+    /**
      * Constructor
      *
      * @param Template\Context $context
      * @param Config $config
+     * @param NavigationConfigInterface $navigationConfig
      * @param FilterHelper $filterHelper
      * @param Json $jsonSerializer
      * @param array $data
      */
-    public function __construct(Template\Context $context, Config $config, FilterHelper $filterHelper, Json $jsonSerializer, array $data = [])
-    {
+    public function __construct(
+        Template\Context $context,
+        Config $config,
+        NavigationConfigInterface $navigationConfig,
+        FilterHelper $filterHelper,
+        Json $jsonSerializer,
+        array $data = []
+    ) {
         parent::__construct($context, $data);
         $this->config = $config;
         $this->filterHelper = $filterHelper;
         $this->jsonSerializer = $jsonSerializer;
+        $this->navigationConfig = $navigationConfig;
     }
 
     /**
@@ -95,15 +109,14 @@ class DefaultRenderer extends Template
      */
     public function hasAlternateSortOrder()
     {
-        $filter = function (Item $item)
-        {
+        $filter = function (Item $item) {
             return $item->getAlternateSortOrder() !== null;
         };
 
         $items = $this->getItems();
-        $itemsWIthAlternateSortOrder = array_filter($items, $filter);
+        $itemsWithAlternateSortOrder = array_filter($items, $filter);
 
-        return \count($items) === \count($itemsWIthAlternateSortOrder);
+        return \count($items) === \count($itemsWithAlternateSortOrder);
     }
 
     /**
@@ -209,18 +222,9 @@ class DefaultRenderer extends Template
     /**
      * @return string
      */
-    public function getJsNavigationConfig(): string
+    public function getJsFilterNavigationConfig()
     {
-        $navigationOptions = ['hasAlternateSort' => $this->hasAlternateSortOrder()];
-        return $this->config->getJsNavigationConfig($navigationOptions);
-    }
-
-    /**
-     * @return Config
-     */
-    public function getJsUseFormFilters()
-    {
-        return $this->config->getJsUseFormFilters();
+        return $this->navigationConfig->getJsFilterNavigationConfig();
     }
 
     /**

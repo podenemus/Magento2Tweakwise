@@ -26,8 +26,7 @@ define([
                 }
             }.bind(this));
 
-            var templateId = '#autocomplete-item-template';
-            this.options.template = templateId;
+            this.options.template = '#autocomplete-item-template';
             this.options.url = $(templateId).data('url');
 
             return this._superApply(arguments);
@@ -39,9 +38,7 @@ define([
                 return this._superApply(arguments);
             }
 
-            if (url !== null) {
-                window.location.href = url;
-            }
+            window.location.href = url;
         },
 
         _onPropertyChange: function () {
