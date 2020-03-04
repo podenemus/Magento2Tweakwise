@@ -7,7 +7,7 @@
  */
 
 use Emico\Tweakwise\Model\Catalog\Layer\Filter;
-use Emico\Tweakwise\Model\NavigationConfig\NavigationConfig;
+use Emico\Tweakwise\Model\NavigationConfig;
 use Magento\LayeredNavigation\Block\Navigation;
 
 /** @var $block Navigation */
@@ -19,8 +19,8 @@ if (!$block->canShowBlock()) return;
 <?php /** @var NavigationConfig $tweakwiseNavigationConfig */?>
 <?php $tweakwiseNavigationConfig = $block->getData('tweakwise_navigation_config');?>
 <?php $jsFormConfig = $tweakwiseNavigationConfig->getJsFormConfig(); ?>
-<?php $renderForm = (bool)$jsFormConfig;?>
-<?php $renderFilterButton = $tweakwiseNavigationConfig->getUseFormFilters();?>
+<?php $renderFilterButton = $tweakwiseNavigationConfig->isFormFilters();?>
+<?php $isAjaxFilters = $tweakwiseNavigationConfig->isAjaxFilters();?>
 
 <?php $hasFilters = count($filters) > 0; ?>
 <div class="block filter<?=($hasFilters ? ' filter-no-options' : '')?>"
@@ -39,49 +39,50 @@ if (!$block->canShowBlock()) return;
             </div>
         <?php endif; ?>
 
-        <?php if ($filters): ?>
+        <?php if ($hasFilters): ?>
             <strong role="heading" aria-level="2" class="block-subtitle filter-subtitle"><?=__('Shopping Options') ?></strong>
             <div class="filter-options" id="narrow-by-list" data-role="content">
-                <?php if ($renderForm): ?>
-                    <form id="facet-filter-form" <?=($jsFormConfig ? sprintf('data-mage-init=\'%s\'', $jsFormConfig) : '')?>>
-                <?php endif;?>
-                <?php foreach ($filters as $filter): ?>
-                    <?php if ($filter->isCollapsible()): ?>
-                        <?php $filterActive = $filter->isDefaultCollapsed() ? 'false' : '[0]'; ?>
-                        <div class="collapsible-container <?=$filter->getCssClass()?>" data-mage-init='{"accordion":{"openedState": "active", "collapsible": true, "active": <?=$filterActive?>}}'>
-                            <?php $filterContentStyle = $filter->isDefaultCollapsed() ? ' style="display: none;"' : ''?>
-                            <div data-role="collapsible" class="filter-options-item">
-                                <div data-role="title" class="filter-options-title">
-                                    <?=__($filter->getName())?>
-
-                                    <?php $tooltip = $filter->getTooltip(); ?>
-                                    <?php if ($tooltip): ?>
-                                        <?php $tooltip = htmlentities($tooltip); ?>
-                                        <span class="tooltip" data-tooltip="<?=$tooltip?>">I</span>
-                                    <?php endif; ?>
+                <form id="facet-filter-form" <?=($jsFormConfig ? sprintf('data-mage-init=\'%s\'', $jsFormConfig) : '')?>>
+                    <?php if ($isAjaxFilters):?>
+                        <input type="hidden" name="__tw_original_url" value="<?=$tweakwiseNavigationConfig->getOriginalUrl()?>">
+                        <input type="hidden" name="__tw_category_id" value="<?=$tweakwiseNavigationConfig->getCategoryId()?>">
+                    <?php endif;?>
+                    <?php foreach ($filters as $filter): ?>
+                        <?php if ($filter->isCollapsible()): ?>
+                            <?php $filterActive = $filter->isDefaultCollapsed() ? 'false' : '[0]'; ?>
+                            <div class="collapsible-container <?=$filter->getCssClass()?>"
+                                 data-mage-init='{"accordion":{"openedState": "active", "collapsible": true, "active": <?=$filterActive?>}}'
+                            >
+                                <div data-role="collapsible" class="filter-options-item">
+                                    <div data-role="title" class="filter-options-title">
+                                        <?=__($filter->getName())?>
+                                        <?php $tooltip = $filter->getTooltip(); ?>
+                                        <?php if ($tooltip): ?>
+                                            <?php $tooltip = htmlentities($tooltip); ?>
+                                            <span class="tooltip" data-tooltip="<?=$tooltip?>">I</span>
+                                        <?php endif; ?>
+                                    </div>
+                                        <?php $filterContentStyle = $filter->isDefaultCollapsed() ? ' style="display: none;"' : ''?>
+                                    <div data-role="content" class="filter-options-content"<?=$filterContentStyle?>>
+                                        <?=$block->getChildBlock('renderer')->render($filter) ?>
+                                    </div>
                                 </div>
-                                <div data-role="content" class="filter-options-content"<?=$filterContentStyle?>>
+                            </div>
+                        <?php else: ?>
+                            <div class="filter-options-item">
+                                <div class="filter-options-title filter-options-title-non-collapsible"><?=__($filter->getName())?></div>
+                                <div class="filter-options-content">
                                     <?=$block->getChildBlock('renderer')->render($filter) ?>
                                 </div>
                             </div>
-                        </div>
-                    <?php else: ?>
-                        <div class="filter-options-item">
-                            <div class="filter-options-title filter-options-title-non-collapsible"><?=__($filter->getName())?></div>
-                            <div class="filter-options-content">
-                                <?=$block->getChildBlock('renderer')->render($filter) ?>
+                        <?php endif; ?>
+                        <?php if ($renderFilterButton): ?>
+                            <div class="show-items-link">
+                                <button type="submit" class="btn btn-primary btn-block js-btn-filter"><?=__(sprintf('Show <span>%s</span> items', $this->getLayer()->getProductCount())); ?></button>
                             </div>
-                        </div>
-                    <?php endif; ?>
-                    <?php if ($renderForm && $renderFilterButton): ?>
-                        <div class="show-items-link">
-                            <button type="submit" class="btn btn-primary btn-block js-btn-filter"><?=__(sprintf('Show <span>%s</span> items', $this->getLayer()->getProductCount())); ?></button>
-                        </div>
-                    <?php endif;?>
-                <?php endforeach; ?>
-                <?php if ($renderForm): ?>
-                    </form>
-                <?php endif;?>
+                        <?php endif;?>
+                    <?php endforeach; ?>
+                </form>
             </div>
         <?php endif; ?>
     </div>

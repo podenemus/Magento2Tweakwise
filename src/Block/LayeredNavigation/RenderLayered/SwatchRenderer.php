@@ -9,7 +9,7 @@
 namespace Emico\Tweakwise\Block\LayeredNavigation\RenderLayered;
 
 use Emico\Tweakwise\Model\Catalog\Layer\Filter\Item;
-use Emico\Tweakwise\Model\NavigationConfig\NavigationConfigInterface;
+use Emico\Tweakwise\Model\NavigationConfig;
 use Magento\Catalog\Model\Product;
 use Magento\Catalog\Model\ResourceModel\Layer\Filter\AttributeFactory;
 use Magento\Eav\Model\Entity\Attribute;
@@ -55,7 +55,7 @@ class SwatchRenderer extends RenderLayered
     protected $jsonSerializer;
 
     /**
-     * @var NavigationConfigInterface
+     * @var NavigationConfig
      */
     protected $navigationConfig;
 
@@ -67,7 +67,7 @@ class SwatchRenderer extends RenderLayered
      * @param Data $swatchHelper
      * @param Media $mediaHelper
      * @param Config $config
-     * @param NavigationConfigInterface $navigationConfig
+     * @param NavigationConfig $navigationConfig
      * @param EavAttributeFactory $eavAttributeFactory
      * @param FilterHelper $filterHelper
      * @param Json $jsonSerializer
@@ -81,7 +81,7 @@ class SwatchRenderer extends RenderLayered
         Media $mediaHelper,
         Config $config,
         EavAttributeFactory $eavAttributeFactory,
-        NavigationConfigInterface $navigationConfig,
+        NavigationConfig $navigationConfig,
         FilterHelper $filterHelper,
         Json $jsonSerializer,
         array $data = []
@@ -112,14 +112,6 @@ class SwatchRenderer extends RenderLayered
     }
 
     /**
-     * @return bool
-     */
-    public function getUseFormFilters()
-    {
-        return $this->config->getUseFormFilters();
-    }
-
-    /**
      * @param Item $item
      * @return string
      */
@@ -135,14 +127,6 @@ class SwatchRenderer extends RenderLayered
     public function getItemForSwatch($id)
     {
         return $this->filter->getItemByOptionId($id);
-    }
-
-    /**
-     * @return string
-     */
-    public function getJsFilterNavigationConfig()
-    {
-        return $this->navigationConfig->getJsFilterNavigationConfig();
     }
 
     /**
