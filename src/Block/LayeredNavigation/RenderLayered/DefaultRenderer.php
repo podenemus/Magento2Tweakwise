@@ -179,23 +179,6 @@ class DefaultRenderer extends Template
     }
 
     /**
-     * @return string
-     */
-    public function getCssId()
-    {
-        return spl_object_hash($this);
-    }
-
-    /**
-     * @param Item $item
-     * @return string
-     */
-    public function getCssItemId(Item $item)
-    {
-        return $item->getCssId();
-    }
-
-    /**
      * @return bool
      */
     public function showCheckbox()
