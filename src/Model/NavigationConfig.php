@@ -167,7 +167,7 @@ class NavigationConfig implements ArgumentInterface
     {
         return $this->isSearch()
             ? 'catalogsearch/result/index'
-            : $this->getCategory()->getUrl();
+            : str_replace($this->url->getBaseUrl(), '', $this->getCategory()->getUrl());
     }
 
     /**
