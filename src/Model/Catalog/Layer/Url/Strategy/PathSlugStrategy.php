@@ -39,68 +39,70 @@ class PathSlugStrategy implements UrlInterface, RouteMatchingInterface, FilterAp
 {
     const REQUEST_FILTER_PATH = 'filter_path';
 
-    const MEDIA_EXTENSIONS = [
-        '.jpg',
-        '.png',
-        '.jpeg',
-        '.webp',
-        '.gif'
-    ];
-
     /**
      * @var Resolver
      */
-    private $layerResolver;
+    protected $layerResolver;
 
     /**
      * @var FilterSlugManager
      */
-    private $filterSlugManager;
+    protected $filterSlugManager;
 
     /**
      * @var UrlModel
      */
-    private $magentoUrl;
+    protected $magentoUrl;
 
     /**
      * @var UrlFinderInterface
      */
-    private $urlFinder;
+    protected $urlFinder;
 
     /**
      * @var Item[]
      */
-    private $activeFilters;
+    protected $activeFilters;
 
     /**
      * @var QueryParameterStrategy
      */
-    private $queryParameterStrategy;
+    protected $queryParameterStrategy;
 
     /**
      * @var UrlFactory
      */
-    private $urlFactory;
+    protected $urlFactory;
 
     /**
      * @var StoreManagerInterface
      */
-    private $storeManager;
+    protected $storeManager;
 
     /**
      * @var Config
      */
-    private $config;
+    protected $config;
 
     /**
      * @var CurrentContext
      */
-    private $currentContext;
+    protected $currentContext;
 
     /**
      * @var ScopeConfigInterface
      */
-    private $scopeConfig;
+    protected $scopeConfig;
+
+    /**
+     * @var array
+     */
+    protected $rewriteEntities;
+
+    /**
+     * @var array
+     */
+    protected $skipMatchExtensions;
 
     /**
      * Magento constructor.
@@ -115,6 +117,8 @@ class PathSlugStrategy implements UrlInterface, RouteMatchingInterface, FilterAp
      * @param Config $config
      * @param CurrentContext $currentContext
      * @param ScopeConfigInterface $scopeConfig
+     * @param array $rewriteEntities
+     * @param array $skipMatchExtensions
      */
     public function __construct(
         UrlModel $magentoUrl,
@@ -126,7 +130,9 @@ class PathSlugStrategy implements UrlInterface, RouteMatchingInterface, FilterAp
         StoreManagerInterface $storeManager,
         Config $config,
         CurrentContext $currentContext,
-        ScopeConfigInterface $scopeConfig
+        ScopeConfigInterface $scopeConfig,
+        array $rewriteEntities,
+        array $skipMatchExtensions
     ) {
         $this->magentoUrl = $magentoUrl;
         $this->layerResolver = $layerResolver;
@@ -138,6 +144,8 @@ class PathSlugStrategy implements UrlInterface, RouteMatchingInterface, FilterAp
         $this->config = $config;
         $this->currentContext = $currentContext;
         $this->scopeConfig = $scopeConfig;
+        $this->rewriteEntities = $rewriteEntities;
+        $this->skipMatchExtensions = $skipMatchExtensions;
     }
 
     /**
@@ -414,7 +422,7 @@ class PathSlugStrategy implements UrlInterface, RouteMatchingInterface, FilterAp
         $pathsToCheck = $this->getPossibleCategoryPaths($path);
 
         $rewriteFilterData = [
-            UrlRewrite::ENTITY_TYPE => $this->getRewriteEntitiesToCheck(),
+            UrlRewrite::ENTITY_TYPE => $this->rewriteEntities,
             UrlRewrite::REQUEST_PATH => $pathsToCheck
         ];
         try {
@@ -449,14 +457,6 @@ class PathSlugStrategy implements UrlInterface, RouteMatchingInterface, FilterAp
     }
 
     /**
-     * @return string[]
-     */
-    public function getRewriteEntitiesToCheck(): array
-    {
-        return ['category'];
-    }
-
-    /**
      * We dont need to match on media urls
      *
      * @param MagentoHttpRequest $request
@@ -465,8 +465,8 @@ class PathSlugStrategy implements UrlInterface, RouteMatchingInterface, FilterAp
     protected function skip(MagentoHttpRequest $request): bool
     {
         $requestPath = $request->getPathInfo();
-        foreach (self::MEDIA_EXTENSIONS as $fileExtention) {
-            if (strpos($requestPath, $fileExtention, -\strlen($fileExtention)) !== false) {
+        foreach ($this->skipMatchExtensions as $fileExtension) {
+            if (strpos($requestPath, $fileExtension, -\strlen($fileExtension)) !== false) {
                 return true;
             }
         }
