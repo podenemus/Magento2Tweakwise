@@ -56,6 +56,14 @@ class Item extends MagentoItem
     }
 
     /**
+     *
+     */
+    public function __clone()
+    {
+        $this->attributeType = clone $this->attributeType;
+    }
+
+    /**
      * @return Filter
      */
     public function getFilter()
@@ -68,8 +76,7 @@ class Item extends MagentoItem
      */
     public function getLabel()
     {
-        $title = (string) $this->attributeType->getTitle();
-        return htmlentities($title);
+        return (string) $this->attributeType->getTitle();
     }
 
     /**
