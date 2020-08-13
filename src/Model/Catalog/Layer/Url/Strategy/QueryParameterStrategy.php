@@ -143,9 +143,9 @@ class QueryParameterStrategy implements UrlInterface, FilterApplierInterface, Ca
         if (!$data) {
             if ($settings->getIsMultipleSelect()) {
                 return [];
-            } else {
-                return null;
             }
+
+            return null;
         }
 
         if ($settings->getIsMultipleSelect()) {
@@ -153,9 +153,9 @@ class QueryParameterStrategy implements UrlInterface, FilterApplierInterface, Ca
                 $data = [$data];
             }
             return array_map('strval', $data);
-        } else {
-            return (string) $data;
         }
+
+        return (string) $data;
     }
 
     /**
